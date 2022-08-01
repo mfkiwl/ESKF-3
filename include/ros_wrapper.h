@@ -8,6 +8,7 @@
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/Imu.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/Pose.h"
 #include "geography.h"
 #include "base_type.h"
 #include "eskf.h"
@@ -28,11 +29,14 @@ private:
     nav_msgs::Path gps_path;
     nav_msgs::Path fusion_path;
 
-    ros::Publisher gps_pub;
+    ros::Publisher gps_path_pub;
+    ros::Publisher fusion_path_pub;
     ros::Publisher fusion_pub;
 
     ros::Subscriber gps_sub;
     ros::Subscriber imu_sub;
+
+    geometry_msgs::Pose fused_pose;
 
     State state;
     IMUData imu_data;
@@ -43,9 +47,9 @@ private:
 };
 
 ROSWrapper::ROSWrapper(ros::NodeHandle &n, const double lat, const double lon): nh(n), init(false){
-    gps_pub = nh.advertise<nav_msgs::Path>("/gps_path", 10);
-
-    fusion_pub = nh.advertise<nav_msgs::Path>("/fusion_path", 10);
+    gps_path_pub = nh.advertise<nav_msgs::Path>("/gps_path", 10);
+    fusion_path_pub = nh.advertise<nav_msgs::Path>("/fusion_path", 10);
+    fusion_pub = nh.advertise<geometry_msgs::Pose>("/fused_pose", 10);
 
     gps_sub = nh.subscribe("/fix", 10, &ROSWrapper::gps_callback, this);
     imu_sub = nh.subscribe("/imu/data", 10, &ROSWrapper::imu_callback, this);
@@ -92,6 +96,15 @@ void ROSWrapper::gps_callback(const sensor_msgs::NavSatFixConstPtr& gps_msg_ptr)
     eskf.Injection(state);
     eskf.Reset(state);
 
+    fused_pose.position.x = state.position[0];
+    fused_pose.position.y = state.position[1];
+    fused_pose.position.z = state.position[2];
+    fused_pose.orientation.w = state.quaternion.w();
+    fused_pose.orientation.x = state.quaternion.x();
+    fused_pose.orientation.y = state.quaternion.y();
+    fused_pose.orientation.z = state.quaternion.z();
+    fusion_pub.publish(fused_pose);
+
     geometry_msgs::PoseStamped point;
     point.header.frame_id = "map";
     point.header.stamp = ros::Time::now();
@@ -103,7 +116,7 @@ void ROSWrapper::gps_callback(const sensor_msgs::NavSatFixConstPtr& gps_msg_ptr)
     point.pose.orientation.y = 0;
     point.pose.orientation.z = 0;
     gps_path.poses.push_back(point);
-    gps_pub.publish(gps_path);
+    gps_path_pub.publish(gps_path);
 
     geometry_msgs::PoseStamped point_fused;
     point_fused.header.frame_id = "map";
@@ -117,7 +130,7 @@ void ROSWrapper::gps_callback(const sensor_msgs::NavSatFixConstPtr& gps_msg_ptr)
     point_fused.pose.orientation.z = state.quaternion.z();
 
     fusion_path.poses.push_back(point_fused);
-    fusion_pub.publish(fusion_path);
+    fusion_path_pub.publish(fusion_path);
 }
 
 void ROSWrapper::assign_imu(const sensor_msgs::ImuConstPtr& imu_msg_ptr, IMUData& imu_data){

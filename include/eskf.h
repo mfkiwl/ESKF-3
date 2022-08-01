@@ -24,7 +24,7 @@ private:
     double gyro_noise = 5e-4;
     double acc_bias_noise = 5e-4;
     double gyro_bias_noise = 5e-4;
-    double pose_noise = 0.8;
+    double pose_noise = 1.2;
 };
 
 void ESKF::Init(const GPSData& gps_data, State& state){
