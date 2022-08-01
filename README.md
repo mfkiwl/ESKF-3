@@ -57,8 +57,8 @@ roslaunch eskf eskf.launch
 ```
 
 ## Result in rviz
-- the green path is made from raw GPS
-- the red path is made from fused data by ESKF
+- the green path is made by raw GPS
+- the red path is made by ESKF
 
 <img src="./result/eskf_test_rviz.png" width=480>
 
