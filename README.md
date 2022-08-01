@@ -8,7 +8,27 @@ a fusion method of GPS and IMU based on error state kalman filter
 
 - package: nmea_navsat_driver
 
-## Datasets
+## IO and Datasets
+
+### Input
+
+1. required **GPS** messages, include:
+
+  - position: longitude, latitude and altitude
+
+2. required **IMU** messages, include:
+  
+  - angular velocity
+  - linear acceleration
+  
+### Output
+
+1. output the position and orientation in **NED** coordinate system, include:
+
+  - position: north, east and down
+  - orientation: w, x, y and z
+  
+### Datasets
 
 - download from [utbm_robocar_dataset_20190131_noimage.bag](https://drive.utbm.fr/s/H4fH99RH8YwywY3)
 
@@ -36,30 +56,14 @@ source ~/catkin_ws/devel/setup.bash
 roslaunch eskf eskf.launch
 ```
 
-## IO
-
-### Input
-
-1. **GPS** messages, include:
-
-  - position: longitude, latitude and altitude.
-
-2. **IMU** messages, include:
-  
-  - angular velocity;
-  - linear acceleration.
-  
-### Output
-
-1. The position and orientation in **NED** coordinate system, include:
-
-  - position: north, east and down;
-  - orientation: w, x, y and z.
-
 ## Result in rviz
+- the green path is made from raw GPS
+- the red path is made from fused data by ESKF
+
+<img src="./result/eskf_test_rviz.png" width=480>
 
 ## Reference
 
 - paper: [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/abs/1711.02508)
 
-- code: [imu_x_fusion](https://github.com/cggos/imu_x_fusion.git) and [imu_gps_localization](https://github.com/ydsf16/imu_gps_localization.git)
+- codes: [imu_x_fusion](https://github.com/cggos/imu_x_fusion.git) and [imu_gps_localization](https://github.com/ydsf16/imu_gps_localization.git)
