@@ -2,30 +2,6 @@
 
 a fusion method of GPS and IMU based on error state kalman filter
 
-## Introduction
-
-### Input
-
-1. **GPS**
-
-  - longitude
-  - latitude
-  - altitude
-
-2. **IMU**
-  - angular velocity
-  - linear acceleration
-  
-### Output
-
-1. Position in **NED** coordinate system
-
-  - north
-  - east
-  - down
-
-### Result in rviz
-
 ## Prerequisites
 
 1. ROS melodic
@@ -59,6 +35,28 @@ rosbag play [dataset_dir]/utbm_robocar_dataset_20190131_noimage.bag
 source ~/catkin_ws/devel/setup.bash
 roslaunch eskf eskf.launch
 ```
+
+## IO
+
+### Input
+
+1. **GPS** messages, include:
+
+  - position: longitude, latitude and altitude.
+
+2. **IMU** messages, include:
+  
+  - angular velocity;
+  - linear acceleration.
+  
+### Output
+
+1. The position and orientation in **NED** coordinate system, include:
+
+  - position: north, east and down;
+  - orientation: w, x, y and z.
+
+## Result in rviz
 
 ## Reference
 
