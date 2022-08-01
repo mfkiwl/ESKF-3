@@ -1,0 +1,5 @@
+<launch>
+  <node name="nmea" pkg="nmea_navsat_driver" type="nmea_topic_driver" respawn="false"/>
+  <node name="eskf" pkg="eskf" type="eskf" respawn="false"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find eskf)/config/path.rviz" respawn="true"/>
+</launch>
